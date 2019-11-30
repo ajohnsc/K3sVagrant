@@ -1,0 +1,27 @@
+---
+- name: Deploy K3s Master
+  hosts: master
+
+  tasks:
+  - name: install k3s using k3s script
+    shell: >
+      curl -sfL https://get.k3s.io | sh -s - server --bind-address 192.168.0.110 --advertise-address 192.168.0.110
+
+  - name: get node token
+    slurp:
+      src: /var/lib/rancher/k3s/server/node-token
+    register: token
+
+  - name: add token holder
+    add_host:
+      name: "K3S_TOKEN_HOLDER"
+      token: "{{ token.content | b64decode }}"
+
+- name: Deploy k3s workers
+  hosts: worker
+
+  tasks:
+  
+  - name: install k3s using k3s script
+    shell: >
+      curl -sfL https://get.k3s.io | K3S_URL='https://192.168.0.110:6443' K3S_TOKEN="{{ hostvars['K3S_TOKEN_HOLDER']['token'] }}" sh -
