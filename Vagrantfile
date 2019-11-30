@@ -17,7 +17,6 @@ Vagrant.configure("2") do |config|
 	config.vm.define "master" do |master|
 		master.vm.box = "ubuntu/xenial64"
 		master.vm.network "private_network", ip: "192.168.0.110", virtualbox__intnet: true
-		master.vm.network "forwarded_port", guest: 80, host: 8080
 		master.vm.provider "virtualbox" do |mastervm|
 			mastervm.memory = 4096
 			mastervm.cpus = 2
